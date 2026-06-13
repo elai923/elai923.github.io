@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evan Lai — a person, not a profile</title>
+<meta name="description" content="The personal site of Evan Lai. Builder of software for hard problems. No connection requests required.">
+<meta name="theme-color" content="#111413">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Spline+Sans+Mono:wght@300..700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#111413;
+    --ink:#E9E6DC;
+    --blue:#5468FF;       /* LinkedIn's blue, cranked for the dark */
+    --moss:#878C7D;
+    --line:rgba(233,230,220,.15);
+    --radius:2px;
+    --easing:cubic-bezier(.22,1,.36,1);
+  }
+  .dopamine{
+    --paper:#F2EFE5;
+    --ink:#161616;
+    --blue:#FF2E7E;
+    --moss:#6E8F5A;
+    --line:rgba(22,22,22,.16);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Newsreader',serif;
+    font-size:18px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    transition:background .6s var(--easing), color .6s var(--easing);
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--blue);color:var(--paper)}
+  a{color:inherit}
+  :focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+
+  /* ---- grain ---- */
+  .grain{
+    position:fixed;inset:-50%;width:200%;height:200%;
+    pointer-events:none;z-index:9000;opacity:.045;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---- scroll progress ---- */
+  .progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--blue);z-index:9999;transition:width .08s linear}
+
+  /* ---- shared layout ---- */
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  .label{
+    font-family:'Spline Sans Mono',monospace;
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--moss);
+  }
+  section{padding:96px 0;border-top:1px solid var(--line)}
+
+  /* ---- nav ---- */
+  nav{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 24px;
+    mix-blend-mode:difference;color:#fff;
+  }
+  nav .logo{font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:-.02em;text-decoration:none;cursor:pointer}
+  nav .links{display:flex;gap:22px}
+  nav .links a{font-family:'Spline Sans Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;position:relative}
+  nav .links a::after{content:'';position:absolute;left:0;bottom:-4px;height:1px;width:0;background:currentColor;transition:width .35s var(--easing)}
+  nav .links a:hover::after{width:100%}
+
+  /* ---- hero ---- */
+  .hero{min-height:100svh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 8vh;border-top:none;position:relative}
+  .status{
+    display:inline-flex;align-items:center;gap:10px;
+    font-family:'Spline Sans Mono',monospace;font-size:13px;letter-spacing:.08em;
+    margin-bottom:28px;cursor:pointer;user-select:none;width:max-content;
+    background:none;border:1px solid var(--line);border-radius:99px;
+    padding:8px 16px;color:var(--ink);transition:border-color .3s;
+  }
+  .status:hover{border-color:var(--blue)}
+  .dot{width:9px;height:9px;border-radius:50%;background:#3BA55D;animation:pulse 2.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(59,165,93,.5)}70%{box-shadow:0 0 0 9px rgba(59,165,93,0)}100%{box-shadow:0 0 0 0 rgba(59,165,93,0)}}
+
+  .kinetic{
+    font-family:'Archivo',sans-serif;
+    font-size:clamp(64px,14.5vw,210px);
+    line-height:.88;letter-spacing:-.035em;
+    font-variation-settings:'wght' 300,'wdth' 90;
+    user-select:none;cursor:default;
+  }
+  .kinetic .ln{display:block;white-space:nowrap}
+  .kinetic span{display:inline-block;font-variation-settings:inherit;transition:font-variation-settings .12s linear}
+
+  .hero-sub{
+    display:flex;justify-content:space-between;align-items:flex-end;gap:32px;
+    margin-top:36px;flex-wrap:wrap;
+  }
+  .hero-sub p{max-width:48ch;font-size:21px;font-style:italic;font-weight:300}
+  .hero-sub p b{font-style:normal;font-weight:500;color:var(--blue)}
+  .scroll-cue{font-family:'Spline Sans Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);animation:bob 2.4s var(--easing) infinite}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+
+  /* ---- reveal on scroll ---- */
+  .rv{opacity:0;transform:translateY(34px);transition:opacity .8s var(--easing),transform .8s var(--easing)}
+  .rv.in{opacity:1;transform:none}
+
+  /* ---- currently ---- */
+  .now-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:40px}
+  .now-cell{background:var(--paper);padding:30px 26px;transition:background .6s var(--easing)}
+  .now-cell h3{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700;letter-spacing:-.01em;margin:14px 0 8px}
+  .now-cell p{font-size:16px;color:color-mix(in srgb,var(--ink) 72%,var(--paper))}
+
+  /* ---- work : anti-grid timeline ---- */
+  .job{
+    display:grid;grid-template-columns:160px 1fr;gap:28px;
+    padding:38px 0;border-bottom:1px solid var(--line);
+    transition:padding-left .45s var(--easing);
+  }
+  .job:hover{padding-left:18px}
+  .job:nth-child(odd){margin-left:6%}
+  .job .when{font-family:'Spline Sans Mono',monospace;font-size:13px;color:var(--moss);padding-top:8px}
+  .job h3{font-family:'Archivo',sans-serif;font-size:26px;font-weight:750;letter-spacing:-.02em;font-variation-settings:'wdth' 96}
+  .job .org{font-style:italic;color:var(--moss);font-size:17px;margin:2px 0 10px}
+  .job p{max-width:58ch}
+
+  /* ---- projects ---- */
+  .proj{
+    display:flex;justify-content:space-between;align-items:baseline;gap:24px;
+    padding:30px 8px;border-bottom:1px solid var(--line);
+    text-decoration:none;position:relative;overflow:hidden;
+  }
+  .proj::before{
+    content:'';position:absolute;inset:0;background:var(--ink);
+    transform:scaleY(0);transform-origin:bottom;transition:transform .45s var(--easing);
+    z-index:0;
+  }
+  .proj:hover::before{transform:scaleY(1)}
+  .proj > *{position:relative;z-index:1;transition:color .45s var(--easing)}
+  .proj:hover > *{color:var(--paper)}
+  .proj h3{font-family:'Archivo',sans-serif;font-size:clamp(24px,4vw,40px);font-weight:300;letter-spacing:-.02em;transition:font-weight .4s,color .45s var(--easing)}
+  .proj:hover h3{font-weight:800}
+  .proj .meta{font-family:'Spline Sans Mono',monospace;font-size:13px;color:var(--moss);white-space:nowrap}
+
+  /* ---- honest endorsements marquee ---- */
+  .marquee-wrap{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0;overflow:hidden;margin-top:44px}
+  .marquee{display:flex;gap:64px;width:max-content;animation:scrolltext 38s linear infinite}
+  .marquee-wrap:hover .marquee{animation-play-state:paused}
+  .marquee q{
+    font-family:'Newsreader',serif;font-style:italic;font-size:22px;white-space:nowrap;
+  }
+  .marquee q::after{content:' — ' attr(data-by);font-family:'Spline Sans Mono',monospace;font-style:normal;font-size:13px;color:var(--moss)}
+  @keyframes scrolltext{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ---- hobbies: honest skill bars ---- */
+  .hobby{
+    display:grid;grid-template-columns:1fr 1fr;gap:8px 40px;align-items:baseline;
+    padding:26px 0;border-bottom:1px solid var(--line);
+  }
+  .hobby h3{font-family:'Archivo',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.015em;font-variation-settings:'wdth' 96}
+  .hobby .verdict{font-style:italic;color:var(--moss);font-size:16px}
+  .bar{grid-column:2;grid-row:1/3;align-self:center;height:8px;background:var(--line);border-radius:99px;overflow:hidden;position:relative}
+  .bar-fill{
+    height:100%;width:0;background:var(--blue);border-radius:99px;
+    transition:width 1.4s var(--easing) .2s;
+  }
+  .hobby.in .bar-fill{width:var(--p)}
+  .hobby .pct{
+    grid-column:2;grid-row:1;justify-self:end;align-self:start;
+    font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--moss);
+    transform:translateY(-18px);
+  }
+  .hobby:hover .bar-fill{filter:brightness(1.15)}
+  @media(max-width:760px){
+    .hobby{grid-template-columns:1fr}
+    .bar{grid-column:1;grid-row:auto;margin-top:6px}
+    .hobby .pct{grid-column:1;grid-row:auto;transform:none;justify-self:start}
+  }
+
+  /* ---- contact ---- */
+  .contact{text-align:left;padding-bottom:60px}
+  .big-link{
+    display:block;text-decoration:none;
+    font-family:'Archivo',sans-serif;
+    font-size:clamp(40px,9vw,120px);font-weight:200;letter-spacing:-.03em;line-height:1.05;
+    font-variation-settings:'wdth' 86;
+    transition:font-variation-settings .5s var(--easing),color .4s,font-weight .5s;
+    margin-top:24px;word-break:break-word;
+  }
+  .big-link:hover{font-weight:800;font-variation-settings:'wdth' 110;color:var(--blue)}
+  .socials{display:flex;gap:26px;margin-top:44px;flex-wrap:wrap}
+  .socials a{font-family:'Spline Sans Mono',monospace;font-size:13px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;position:relative}
+  .socials a::after{content:'';position:absolute;left:0;bottom:-4px;height:1px;width:100%;background:var(--ink);transform:scaleX(0);transform-origin:right;transition:transform .35s var(--easing)}
+  .socials a:hover::after{transform:scaleX(1);transform-origin:left}
+
+  footer{padding:30px 0 40px;border-top:1px solid var(--line)}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer small{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--moss)}
+  footer small em{font-style:normal;cursor:help;border-bottom:1px dotted var(--moss)}
+
+  /* ---- toast ---- */
+  .toast{
+    position:fixed;bottom:28px;left:50%;transform:translate(-50%,140%);
+    background:var(--ink);color:var(--paper);
+    font-family:'Spline Sans Mono',monospace;font-size:13px;
+    padding:14px 22px;border-radius:99px;z-index:9999;
+    transition:transform .5s var(--easing);max-width:90vw;text-align:center;
+  }
+  .toast.show{transform:translate(-50%,0)}
+
+  /* ---- responsive ---- */
+  @media(max-width:760px){
+    .now-grid{grid-template-columns:1fr}
+    .job{grid-template-columns:1fr;gap:6px}
+    .job:nth-child(odd){margin-left:0}
+    nav .links a:not(:last-child){display:none}
+    section{padding:72px 0}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+    .rv{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" aria-hidden="true"></div>
+
+<nav>
+  <a class="logo" id="logo" href="#top">EL©</a>
+  <div class="links">
+    <a href="#now">Now</a>
+    <a href="#work">Work</a>
+    <a href="#projects">Projects</a>
+    <a href="#hobbies">Off the clock</a>
+    <a href="#contact">Say hi</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero wrap" id="top">
+  <button class="status" id="status" type="button" aria-label="Availability status — click to measure" title="Click to measure">
+    <span class="dot" aria-hidden="true"></span> In superposition: making things
+  </button>
+
+  <h1 class="kinetic" id="kinetic" aria-label="Evan Lai">
+    <span class="ln" data-text="EVAN"></span>
+    <span class="ln" data-text="LAI"></span>
+  </h1>
+
+  <div class="hero-sub">
+    <p>I build algorithm for problems that would rather not be solved.
+       Machine learning, quantum optimization, and lately the quiet craft
+       of vibe-coding — chasing the shape of an answer across whatever
+       discipline happens to hold it. A derivatives mind that wandered into physics,
+       <b>constantly seeking inspiration to cross one more border.</b></p>
+    <span class="scroll-cue">scroll ↓</span>
+  </div>
+</header>
+
+<!-- ============ NOW ============ -->
+<section id="now" class="wrap">
+  <span class="label rv">01 / Where my hours go</span>
+  <div class="now-grid">
+    <div class="now-cell rv">
+      <span class="label">Building</span>
+      <h3>Software for the stubborn problems</h3>
+      <p>Optimization and machine learning, set loose on finance, drug discovery, and many more. The instrument changes hands; the problems stay beautifully unwilling.</p>
+    </div>
+    <div class="now-cell rv">
+      <span class="label">Researching</span>
+      <h3>Chemistry, simulation & error correction</h3>
+      <p>Simulated bifurcation, and whatever method earns its keep. The thread that runs through all of it: teaching tools to do the things they were never meant to.</p>
+    </div>
+    <div class="now-cell rv">
+      <span class="label">Learning</span>
+      <h3>Japanese — and vibe coding</h3>
+      <p>Taught to myself, like everything before it. The kanji resist, patiently. The machine I write alongside does not — it helped shape this very page.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WORK ============ -->
+<section id="work" class="wrap">
+  <span class="label rv">02 / The road so far</span>
+  <div style="margin-top:24px">
+    <article class="job rv">
+      <div class="when">since 2018</div>
+      <div>
+        <h3>Quantum Algorithms & Applications Stack</h3>
+        <div class="org">Early-stage deep tech — Toronto</div>
+        <p>Eight years building at the edge, where finance, drug discovery, and logistics all turned out to be the same problem wearing different clothes. Early-stage is a polite word for: nothing existed until we made it.</p>
+      </div>
+    </article>
+    <article class="job rv">
+      <div class="when">since 2025</div>
+      <div>
+        <h3>Quantum-Quantum R&amp;D</h3>
+        <div class="org">A second venture, same obsession — Stockholm</div>
+        <p>Where the stranger ideas are allowed to breathe — one kind of machine teaching another to be better than itself. A patent pending, and a queue of quieter experiments behind it.</p>
+      </div>
+    </article>
+    <article class="job rv">
+      <div class="when">before 2018</div>
+      <div>
+        <h3>MSc in Finance, financial derivatives</h3>
+        <div class="org">Then: the regiem-crossing</div>
+        <p>Programming, machine learning, and the physics — all learned alone, from nothing. The derivatives, it turned out, were only the warm-up for harder, more beautiful math.</p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ PROJECTS ============ -->
+<section id="projects" class="wrap">
+  <span class="label rv">03 / Things I've made</span>
+  <p class="rv" style="margin-top:18px;max-width:54ch;font-style:italic;font-weight:300;font-size:20px">
+    A handful I'm fond of — bound by one recurring grace:
+    <span style="font-style:normal;color:var(--blue)">one machine, taught to lift another.</span>
+  </p>
+  <div style="margin-top:24px">
+    <div class="proj rv">
+      <h3>Generative chemistry on a quantum annealer</h3>
+      <span class="meta">drug discovery</span>
+    </div>
+    <div class="proj rv">
+      <h3>Novel method for quantum simulation</h3>
+      <span class="meta">patent pending</span>
+    </div>
+    <div class="proj rv">
+      <h3>Annealing-assisted error correction</h3>
+      <span class="meta">quantum × quantum</span>
+    </div>
+    <div class="proj rv">
+      <h3>This website</h3>
+      <span class="meta">vibe-coded</span>
+    </div>
+  </div>
+
+  <span class="label rv" style="display:block;margin-top:72px">04 / What others say, unvarnished</span>
+  <div class="marquee-wrap rv" aria-hidden="true">
+    <div class="marquee" id="marquee">
+      <q data-by="someone at a wedding">Asked what he does. Forty minutes later I understood Ising machines.</q>
+      <q data-by="a coworker">His code converges. His chess openings don't.</q>
+      <q data-by="a recruiter, confused">Self-taught everything after the finance degree. We double-checked.</q>
+      <q data-by="an AI assistant">Vibe-codes with unusually clear instructions. Five stars.</q>
+      <!-- <q data-by="the Old Ones">Keeps losing to us in Arkham Horror. Keeps coming back.</q>
+      <q data-by="Genichiro Ashina">Died to me many times. Learned. That was the problem.</q> -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOBBIES ============ -->
+<section id="hobbies" class="wrap">
+  <span class="label rv">05 / Off the clock</span>
+  <p class="rv" style="margin-top:18px;max-width:52ch;font-style:italic;font-weight:300;font-size:20px">
+    LinkedIn would call these “skills” and hand them to strangers to bless.
+    Here, instead, are the honest measurements.
+  </p>
+  <div style="margin-top:28px">
+    <article class="hobby rv" style="--p:30%">
+      <h3>Chess</h3>
+      <span class="verdict">870 after half a year — a slow climb up a steep board. An annealer would know better. I'm learning to.</span>
+      <span class="pct">870 elo</span>
+      <div class="bar"><div class="bar-fill"></div></div>
+    </article>
+    <article class="hobby rv" style="--p:10%">
+      <h3>Japanese</h3>
+      <span class="verdict">Taught to myself, like all the rest. The road is long and lovely. まだまだです。</span>
+      <span class="pct">10%</span>
+      <div class="bar"><div class="bar-fill"></div></div>
+    </article>
+    <article class="hobby rv" style="--p:82%">
+      <h3>Board games</h3>
+      <span class="verdict">An Arkham Horror devotee. The Old Ones almost always win — and that, somehow, is the whole point.</span>
+      <span class="pct">82%</span>
+      <div class="bar"><div class="bar-fill"></div></div>
+    </article>
+    <article class="hobby rv" style="--p:65%">
+      <h3>Soulslikes</h3>
+      <span class="verdict">Sekiro, above all. The death count stays a secret. Hesitation, after all, is defeat.</span>
+      <span class="pct">65%</span>
+      <div class="bar"><div class="bar-fill"></div></div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact" class="wrap contact">
+  <span class="label rv">06 / No connection request required</span>
+  <p class="rv" style="margin-top:18px;max-width:46ch;font-style:italic;font-weight:300;font-size:20px">
+    No algorithm between us. If something here struck a chord, just write.
+  </p>
+  <a class="big-link rv" href="mailto:evancllai@gmail.com">evancllai@gmail<wbr>.com</a>
+  <div class="socials rv">
+    <a href="https://www.linkedin.com/in/evancllai" rel="noopener">LinkedIn (ironically)</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <small>© <em id="year" title="">2026</em> Evan Lai</small>
+    <small>A quiet corner of the web. Not affiliated with LinkedIn.</small>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- kinetic hero: split letters ---------- */
+  const lines = document.querySelectorAll('.kinetic .ln');
+  const letters = [];
+  lines.forEach(ln=>{
+    [...ln.dataset.text].forEach(ch=>{
+      const s=document.createElement('span');
+      s.textContent=ch;
+      ln.appendChild(s);
+      letters.push(s);
+    });
+  });
+
+  /* cursor-proximity variable weight (the signature) */
+  let mx=-9999,my=-9999;
+  addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY},{passive:true});
+
+  let t=0;
+  function tick(){
+    t+=0.02;
+    letters.forEach((s,i)=>{
+      const r=s.getBoundingClientRect();
+      const cx=r.left+r.width/2, cy=r.top+r.height/2;
+      const d=Math.hypot(mx-cx,my-cy);
+      // idle breathing wave + cursor bulge
+      const wave=Math.sin(t+i*0.55)*120;
+      const prox=Math.max(0,1-d/340);
+      const w=Math.min(900,Math.max(100, 300+wave+prox*620));
+      const wd=Math.min(125,Math.max(62, 90+prox*35));
+      s.style.fontVariationSettings=`'wght' ${w|0},'wdth' ${wd|0}`;
+    });
+    requestAnimationFrame(tick);
+  }
+  if(!reduceMotion) requestAnimationFrame(tick);
+  else letters.forEach(s=>s.style.fontVariationSettings="'wght' 700,'wdth' 96");
+
+  /* ---------- scroll progress ---------- */
+  const bar=document.querySelector('.progress');
+  addEventListener('scroll',()=>{
+    const h=document.documentElement;
+    bar.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+  },{passive:true});
+
+  /* ---------- reveal on scroll ---------- */
+  const io=new IntersectionObserver(es=>{
+    es.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);} });
+  },{threshold:.15});
+  document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+
+  /* ---------- duplicate marquee for seamless loop ---------- */
+  const mq=document.getElementById('marquee');
+  mq.innerHTML+=mq.innerHTML;
+
+  /* ---------- toast helper ---------- */
+  const toast=document.getElementById('toast');
+  let toastTimer;
+  function say(msg,ms=4200){
+    toast.textContent=msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>toast.classList.remove('show'),ms);
+  }
+
+  /* ============ EASTER EGG 1: measuring the status dot ============ */
+  /* Every click is a measurement. The outcome is probabilistic. Obviously. */
+  let measurements=0;
+  document.getElementById('status').addEventListener('click',()=>{
+    measurements++;
+    if(measurements===7){
+      say('Seven measurements. The wavefunction is getting annoyed. So is Evan. Email him instead.');
+      return;
+    }
+    const outcome=Math.random()<0.5?'|0⟩':'|1⟩';
+    const lines=[
+      `You measured the dot. It collapsed to ${outcome}.`,
+      `Measurement #${measurements}: ${outcome}. It was in superposition until you looked.`,
+      `${outcome} again. The dot is not entangled with Evan's availability.`,
+    ];
+    say(lines[Math.min(measurements,3)-1]||lines[2]);
+  });
+
+  /* ============ EASTER EGG 2: Konami code → dopamine mode ============ */
+  const code=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let pos=0, consoleEggUnlocked=false;
+  addEventListener('keydown',e=>{
+    pos = (e.key===code[pos]) ? pos+1 : (e.key===code[0]?1:0);
+    if(pos===code.length){
+      pos=0;
+      document.body.classList.toggle('dopamine');
+      say(document.body.classList.contains('dopamine')
+        ? '⬆⬆⬇⬇⬅➡⬅➡BA — tunneled through the palette barrier. Welcome to the excited state.'
+        : 'Annealed back to the ground state.');
+      /* the console egg only exists for people who already found this one */
+      if(!consoleEggUnlocked){
+        consoleEggUnlocked=true;
+        console.log('%cSince you clearly know what you\u2019re doing\u2026','font-size:16px;font-weight:bold;color:#5468FF');
+        console.log('%cOne HTML file, zero frameworks, zero dependencies.\nLike a good annealing schedule: simple, then suddenly the answer.\nView source. Steal ideas. That\u2019s what it\u2019s for.','color:#878C7D');
+      }
+    }
+  });
+
+  /* ============ EASTER EGG 3: type "sekiro" anywhere ============ */
+  let buf='';
+  addEventListener('keydown',e=>{
+    if(e.key.length===1){ buf=(buf+e.key.toLowerCase()).slice(-12); }
+    if(buf.endsWith('sekiro')){ buf=''; say('鬼となれ。Hesitation is defeat.'); }
+  });
+
+  /* ============ EASTER EGG 4: the year is uncertain ============ */
+  const yr=document.getElementById('year');
+  yr.title='Click me. Time is just another observable.';
+  let era=0;
+  const eras=['2026','|2026⟩','MMXXVI','0b11111101010','heisei 38, roughly','2026'];
+  yr.addEventListener('click',()=>{ era=(era+1)%eras.length; yr.textContent=eras[era]; });
+})();
+</script>
+</body>
+</html>
