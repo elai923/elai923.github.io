@@ -6,7 +6,7 @@ No connection requests. No "thrilled to announce." No algorithm deciding
 who sees it. Just one page, written in my own voice, about the problems
 I chase and the things I do when I'm not chasing them.
 
-→ **Live:** _(add your URL once it's deployed)_
+→ **Live:** [_(elai923.github.io)_](https://elai923.github.io/)
 
 ---
 
